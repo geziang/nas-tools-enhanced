@@ -1,6 +1,10 @@
 # nas-tools-enhanced
 
-Features:
+The modification of this fork is a personal behavior and does not represent the official position of NasTools.
+
+Please delete within 48 hours after downloading, all consequences caused by using this branch shall be borne by the user himself.
+
+### Features
 
 1. add more indexer support.
 
