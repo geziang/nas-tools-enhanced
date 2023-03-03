@@ -1295,7 +1295,7 @@ if __name__ == "__main__":
     """
     手工转移时，使用命名行调用
     """
-    Config().init_syspath()
+    # Config().init_syspath()
 
     parser = argparse.ArgumentParser(description='文件转移工具')
     parser.add_argument('-m', '--mode', dest='mode', required=True,

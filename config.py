@@ -114,7 +114,7 @@ class Config(object):
         self._config_path = os.environ.get('NASTOOL_CONFIG')
         if not os.environ.get('TZ'):
             os.environ['TZ'] = 'Asia/Shanghai'
-        self.init_syspath()
+        # self.init_syspath()
         self.init_config()
 
     def init_config(self):
@@ -125,6 +125,7 @@ class Config(object):
             if not os.path.exists(self._config_path):
                 cfg_tp_path = os.path.join(self.get_inner_config_path(), "config.yaml")
                 cfg_tp_path = cfg_tp_path.replace("\\", "/")
+                os.mkdir(os.path.join(self._config_path, "../"))
                 shutil.copy(cfg_tp_path, self._config_path)
                 print("【Config】config.yaml 配置文件不存在，已将配置文件模板复制到配置目录...")
             with open(self._config_path, mode='r', encoding='utf-8') as cf:
@@ -139,15 +140,15 @@ class Config(object):
             print("【Config】加载 config.yaml 配置出错：%s" % str(err))
             return False
 
-    def init_syspath(self):
-        with open(os.path.join(self.get_root_path(),
-                               "third_party.txt"), "r") as f:
-            for third_party_lib in f.readlines():
-                module_path = os.path.join(self.get_root_path(),
-                                           "third_party",
-                                           third_party_lib.strip()).replace("\\", "/")
-                if module_path not in sys.path:
-                    sys.path.append(module_path)
+    # def init_syspath(self):
+    #     with open(os.path.join(self.get_root_path(),
+    #                            "third_party.txt"), "r") as f:
+    #         for third_party_lib in f.readlines():
+    #             module_path = os.path.join(self.get_root_path(),
+    #                                        "third_party",
+    #                                        third_party_lib.strip()).replace("\\", "/")
+    #             if module_path not in sys.path:
+    #                 sys.path.append(module_path)
 
     def get_proxies(self):
         return self.get_config('app').get("proxies")

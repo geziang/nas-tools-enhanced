@@ -118,8 +118,7 @@ class SystemUtils:
 
     @staticmethod
     def is_lite_version():
-        return True if SystemUtils.is_docker() \
-                       and os.environ.get("NASTOOL_VERSION") == "lite" else False
+        return False
 
     @staticmethod
     def get_webdriver_path():

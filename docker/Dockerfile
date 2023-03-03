@@ -10,16 +10,15 @@ RUN apk add --no-cache libffi-dev \
     && chmod +x /usr/bin/mc \
     && pip install --upgrade pip setuptools wheel \
     && pip install cython \
-    && pip install -r https://raw.githubusercontent.com/sgpublic/nas-tools-enhanced/master/requirements.txt \
+    && pip install poetry \
+    && poetry set virtualenvs.create true \
+    && poetry set virtualenvs.in-project true \
     && apk del libffi-dev \
     && npm install pm2 -g \
     && rm -rf /tmp/* /root/.cache /var/cache/apk/*
 ENV LANG="C.UTF-8" \
     TZ="Asia/Shanghai" \
     NASTOOL_CONFIG="/config/config.yaml" \
-    NASTOOL_AUTO_UPDATE=true \
-    NASTOOL_CN_UPDATE=true \
-    NASTOOL_VERSION=master \
     PS1="\u@\h:\w \$ " \
     REPO_URL="https://github.com/sgpublic/nas-tools-enhanced.git" \
     PYPI_MIRROR="https://pypi.tuna.tsinghua.edu.cn/simple" \
@@ -27,10 +26,11 @@ ENV LANG="C.UTF-8" \
     PUID=0 \
     PGID=0 \
     UMASK=000 \
-    WORKDIR="/nas-tools"
+    WORKDIR="/nas-tools-enhanced"
+    PIPENV_VENV_IN_PROJECT=true
 WORKDIR ${WORKDIR}
 RUN python_ver=$(python3 -V | awk '{print $2}') \
-    && echo "${WORKDIR}/" > /usr/lib/python${python_ver%.*}/site-packages/nas-tools.pth \
+    && echo "${WORKDIR}/" > /usr/lib/python${python_ver%.*}/site-packages/nas-tools-enhanced.pth \
     && echo 'fs.inotify.max_user_watches=524288' >> /etc/sysctl.conf \
     && echo 'fs.inotify.max_user_instances=524288' >> /etc/sysctl.conf \
     && git config --global pull.ff only \
@@ -38,4 +38,4 @@ RUN python_ver=$(python3 -V | awk '{print $2}') \
     && git config --global --add safe.directory ${WORKDIR}
 EXPOSE 3000
 VOLUME ["/config"]
-ENTRYPOINT ["/nas-tools/docker/entrypoint.sh"]
+ENTRYPOINT ["/nas-tools-enhanced/docker/entrypoint.sh"]

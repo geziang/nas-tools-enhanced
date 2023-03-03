@@ -13,5 +13,4 @@ out/
 gen/
 
 .venv/
-venv/
-bin
+bin/

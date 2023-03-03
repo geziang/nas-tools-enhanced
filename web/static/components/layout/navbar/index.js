@@ -522,7 +522,6 @@ export class LayoutNavbar extends CustomElement {
   constructor() {
     super();
     this.layout_gopage = "";
-    this.layout_appversion = "v2.8.3 e950041";
     this.layout_userpris = navbar_list.map((item) => (item.name));
     this._active_name = "";
     this._update_appversion = "";
@@ -565,17 +564,8 @@ export class LayoutNavbar extends CustomElement {
   _check_new_version() {
     ajax_post("version", {}, (ret) => {
       if (ret.code === 0) {
-        let url = null;
-        switch (compareVersion(ret.version, this.layout_appversion)) {
-          case 1:
-            url = ret.url;
-            break;
-          case 2:
-            url = "https://github.com/sgpublic/nas-tools-enhanced/commits/master"
-            break;
-        }
-        if (url) {
-          this._update_url = url;
+        if (compareVersion(ret.version, this.layout_appversion) > 0) {
+          this._update_url = ret.url;
           this._update_appversion = ret.version;
           this._is_update = true;
         }
