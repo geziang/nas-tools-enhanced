@@ -11,8 +11,7 @@ RUN apk add --no-cache libffi-dev \
     && pip install --upgrade pip setuptools wheel \
     && pip install cython \
     && pip install poetry \
-    && poetry set virtualenvs.create true \
-    && poetry set virtualenvs.in-project true \
+    && poetry config virtualenvs.create true \
     && apk del libffi-dev \
     && npm install pm2 -g \
     && rm -rf /tmp/* /root/.cache /var/cache/apk/*
@@ -27,7 +26,6 @@ ENV LANG="C.UTF-8" \
     PGID=0 \
     UMASK=000 \
     WORKDIR="/nas-tools-enhanced"
-    PIPENV_VENV_IN_PROJECT=true
 WORKDIR ${WORKDIR}
 RUN python_ver=$(python3 -V | awk '{print $2}') \
     && echo "${WORKDIR}/" > /usr/lib/python${python_ver%.*}/site-packages/nas-tools-enhanced.pth \

@@ -43,12 +43,11 @@ class WebUtils:
         """
         try:
             version_res = RequestUtils(proxies=Config().get_proxies()).get_res(
-                "https://api.github.com/repos/sgpublic/nas-tools-enhanced/releases/latest")
+                "https://api.github.com/repos/sgpublic/nas-tools-enhanced/tags")
             if version_res:
-                ver_json = version_res.json()
-                version = f"{ver_json['tag_name']}"
-                url = ver_json["html_url"]
-                return version, url, True
+                ver_json = version_res.json()[0]
+                version = f"{ver_json['name']}"
+                return version, f"https://github.com/sgpublic/nas-tools-enhanced/tree/{version}", True
         except Exception as e:
             ExceptionUtils.exception_traceback(e)
         return None, None, False

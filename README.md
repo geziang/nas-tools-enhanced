@@ -7,6 +7,7 @@ Please delete within 48 hours after downloading, all consequences caused by usin
 ### Features
 
 1. add more indexer support.
+2. add more downloader support.
 
 Note:
 

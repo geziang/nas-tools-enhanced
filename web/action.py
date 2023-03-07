@@ -19,6 +19,7 @@ from app.conf import SystemConfig, ModuleConf
 from app.doubansync import DoubanSync
 from app.downloader import Downloader
 from app.downloader.client import Qbittorrent, Transmission
+from app.downloader.client.xunlei import Xunlei
 from app.filetransfer import FileTransfer
 from app.filter import Filter
 from app.helper import DbHelper, ProgressHelper, ThreadHelper, \
@@ -258,9 +259,9 @@ class WebAction:
             os.kill(os.getpid(), getattr(signal, "SIGKILL", signal.SIGTERM))
         elif SystemUtils.is_synology():
             os.system(
-                "ps -ef | grep -v grep | grep 'python run.py'|awk '{print $2}'|xargs kill -9")
+                "ps -ef | grep -v grep | grep 'poetry run python run.py'|awk '{print $2}'|xargs kill -9")
         else:
-            os.system("pm2 restart NAStool")
+            os.system("poetry run python run.py")
 
     @staticmethod
     def handle_message_job(msg, in_from=SearchType.OT, user_id=None, user_name=None):
@@ -2002,6 +2003,7 @@ class WebAction:
         dl_type = data.get("type")
         if test:
             # 测试
+            downloader = None
             if dl_type == "qbittorrent":
                 downloader = Qbittorrent(
                     config={
@@ -2010,7 +2012,7 @@ class WebAction:
                         "qbusername": data.get("username"),
                         "qbpassword": data.get("password")
                     })
-            else:
+            elif dl_type == "transmission":
                 downloader = Transmission(
                     config={
                         "trhost": data.get("host"),
@@ -2018,7 +2020,14 @@ class WebAction:
                         "trusername": data.get("username"),
                         "trpassword": data.get("password")
                     })
-            if downloader.get_status():
+            elif dl_type == "xunlei":
+                downloader = Xunlei(
+                    config={
+                        "host": data.get("host"),
+                        "port": data.get("port")
+                    })
+
+            if downloader and downloader.get_status():
                 return {"code": 0}
             else:
                 return {"code": 1}

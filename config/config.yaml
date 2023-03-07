@@ -246,6 +246,12 @@ pikpak:
   # 代理
   proxy:
 
+# 【配置迅雷下载软件】
+xunlei:
+  # 【迅雷地址和端口】
+  host:
+  port:
+
 # 【下载目录】：配置下载目录，自按分类下载到指定目录
 downloaddir:
 

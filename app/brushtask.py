@@ -8,6 +8,7 @@ from apscheduler.schedulers.background import BackgroundScheduler
 
 import log
 from app.downloader.client import Qbittorrent, Transmission
+from app.downloader.client.xunlei import Xunlei
 from app.filter import Filter
 from app.helper import DbHelper
 from app.message import Message
@@ -31,6 +32,7 @@ class BrushTask(object):
     _downloader_infos = []
     _qb_client = "qbittorrent"
     _tr_client = "transmission"
+    _xl_client = "xunlei"
 
     def __init__(self):
         self.init_config()
@@ -634,7 +636,7 @@ class BrushTask(object):
                         # 强制做种
                         if forceupload:
                             downloader.torrents_set_force_start(download_id)
-            else:
+            elif downloadercfg.get("type") == self._tr_client:
                 # 初始化下载器
                 downloader = Transmission(config=downloadercfg)
                 if not downloader.trc:
@@ -650,6 +652,13 @@ class BrushTask(object):
                     # 设置标签
                     if download_id and tag:
                         downloader.set_torrent_tag(tid=download_id, tag=tag)
+            elif downloadercfg.get("type") == self._xl_client:
+                # 初始化下载器
+                downloader = Xunlei(config=downloadercfg)
+                if not downloader.get_status():
+                    log.error("【Brush】任务 %s 下载器 %s 无法连接" % (taskname, downloadercfg.get("name")))
+                    return False
+                download_id = downloader.add_torrent(content=content)
         if not download_id:
             # 下载失败
             log.warn(f"【Brush】{taskname} 添加下载任务出错：{title}，"

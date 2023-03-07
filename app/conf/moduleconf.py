@@ -46,7 +46,8 @@ class ModuleConf(object):
         "qbittorrent": DownloaderType.QB,
         "transmission": DownloaderType.TR,
         "client115": DownloaderType.Client115,
-        "pikpak": DownloaderType.PikPak
+        "pikpak": DownloaderType.PikPak,
+        "xunlei": DownloaderType.Xunlei
     }
 
     # 索引器
@@ -653,6 +654,29 @@ class ModuleConf(object):
                     "type": "text",
                     "placeholder": "127.0.0.1:7890"
                 }
+            }
+        },
+        "xunlei": {
+            "name": "迅雷",
+            "img_url": "../static/img/thunder11.ico",
+            "background": "bg-blue",
+            "test_command": "app.downloader.client.xunlei|Xunlei",
+            "config": {
+                "host": {
+                    "id": "xunlei.host",
+                    "required": True,
+                    "title": "IP地址",
+                    "tooltip": "配置IP地址",
+                    "type": "text",
+                    "placeholder": "127.0.0.1"
+                },
+                "port": {
+                    "id": "xunlei.port",
+                    "required": True,
+                    "title": "端口",
+                    "type": "text",
+                    "placeholder": "4321"
+                },
             }
         },
     }
