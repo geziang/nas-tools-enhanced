@@ -8,7 +8,7 @@ readme = "README.md"
 
 
 [tool.poetry.dependencies]
-python = "^3.10 <3.11"
+python = "^3.9 <3.11"
 
 anitopy = "^2.1.1"
 feapder = "^1.8.5"

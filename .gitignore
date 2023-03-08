@@ -14,3 +14,4 @@ gen/
 
 .venv/
 bin/
+bin

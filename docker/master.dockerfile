@@ -11,13 +11,14 @@ RUN apk add --no-cache libffi-dev \
     && pip install --upgrade pip setuptools wheel \
     && pip install cython \
     && pip install poetry \
-    && poetry config virtualenvs.create true \
     && apk del libffi-dev \
     && npm install pm2 -g \
     && rm -rf /tmp/* /root/.cache /var/cache/apk/*
 ENV LANG="C.UTF-8" \
     TZ="Asia/Shanghai" \
     NASTOOL_CONFIG="/config/config.yaml" \
+    NASTOOL_AUTO_UPDATE="false" \
+    NASTOOL_BRANCH="master" \
     PS1="\u@\h:\w \$ " \
     REPO_URL="https://github.com/sgpublic/nas-tools-enhanced.git" \
     PYPI_MIRROR="https://pypi.tuna.tsinghua.edu.cn/simple" \
@@ -32,7 +33,7 @@ RUN python_ver=$(python3 -V | awk '{print $2}') \
     && echo 'fs.inotify.max_user_watches=524288' >> /etc/sysctl.conf \
     && echo 'fs.inotify.max_user_instances=524288' >> /etc/sysctl.conf \
     && git config --global pull.ff only \
-    && git clone -b master ${REPO_URL} ${WORKDIR} --depth=1 --recurse-submodule \
+    && git clone -b ${NASTOOL_BRANCH} ${REPO_URL} ${WORKDIR} --depth=1 --recurse-submodule \
     && git config --global --add safe.directory ${WORKDIR}
 EXPOSE 3000
 VOLUME ["/config"]

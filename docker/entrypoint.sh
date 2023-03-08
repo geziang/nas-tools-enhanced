@@ -1,4 +1,11 @@
-#!/bin/sh
+#!/bin/bash
+
+execute() {
+  echo "$1"
+  exec su-exec "${PUID}":"${PGID}" $1
+}
+
+execute "poetry config virtualenvs.create false"
 
 cd ${WORKDIR}
 
@@ -6,16 +13,15 @@ cd ${WORKDIR}
 if [ "${NASTOOL_AUTO_UPDATE}" = "true" ]; then
     echo "更新程序..."
     git remote set-url origin "${REPO_URL}" &> /dev/null
-    echo "windows/" > .gitignore
 
     git clean -dffx
-    git fetch origin master
-    git reset --hard $(git tag --sort=-v:refname | head -1)
+    git fetch origin ${NASTOOL_BRANCH}
+    git checkout tags/$(git tag --sort=-v:refname | head -1)
 
     if [ $? -eq 0 ]; then
         echo "更新成功..."
         # Python依赖包更新
-        python -m poetry install
+        execute "poetry install"
     else
         echo "更新失败，继续使用旧的程序来启动..."
     fi
@@ -31,4 +37,5 @@ chown -R "${PUID}":"${PGID}" "${WORKDIR}" /config /usr/lib/chromium /.local /.pm
 export PATH=${PATH}:/usr/lib/chromium
 
 umask "${UMASK}"
-exec su-exec "${PUID}":"${PGID}" "$(which dumb-init)" "$(which pm2-runtime)" start run.py -n NAStool --interpreter python3
+
+execute "poetry run python run.py"
