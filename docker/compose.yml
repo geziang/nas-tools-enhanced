@@ -2,7 +2,6 @@ version: "3"
 services:
   nas-tools:
     image: mhmzx/nas-tools-enhanced:latest
-    user: 1000:1000
     ports:
       - 3000:3000        # 默认的webui控制端口
     volumes:
