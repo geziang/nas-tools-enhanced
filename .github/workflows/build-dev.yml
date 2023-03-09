@@ -1,8 +1,7 @@
-name: Build NAStool Enhanced Image
+name: Build NAStool Enhanced Image Dev
+
 on:
-  push:
-    tags:
-      - 'v*'
+  repository_dispatch:
 
 jobs:
   build:
@@ -33,11 +32,10 @@ jobs:
         uses: docker/build-push-action@v2
         with:
           context: .
-          file: docker/master.dockerfile
+          file: docker/dev.dockerfile
           platforms: |
             linux/amd64
             linux/arm64
           push: true
           tags: |
-            ${{ secrets.DOCKER_USERNAME }}/nas-tools-enhanced:latest
-            ${{ secrets.DOCKER_USERNAME }}/nas-tools-enhanced:${{ env.release_tag }}
+            ${{ secrets.DOCKER_USERNAME }}/nas-tools-enhanced:test

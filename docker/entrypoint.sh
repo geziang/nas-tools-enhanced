@@ -1,11 +1,18 @@
 #!/bin/bash
 
+poetry_path="/.poetry"
+mkdir -p "${poetry_path}"
+python_ver=$(python3 -V | awk '{print $2}')
+chown -R "${PUID}":"${PGID}" "${WORKDIR}" /config /usr/lib/chromium "${poetry_path}"
+export PATH=${PATH}:/usr/lib/chromium
+
 execute() {
   echo "$1"
   exec su-exec "${PUID}":"${PGID}" $1
 }
 
-execute "poetry config virtualenvs.create false"
+export POETRY_VIRTUALENVS_PATH="${poetry_path}/venv"
+export POETRY_CACHE_DIR="${poetry_path}/cache"
 
 cd ${WORKDIR}
 
@@ -16,14 +23,12 @@ if [ "${NASTOOL_AUTO_UPDATE}" = "true" ]; then
 
     git clean -dffx
     git fetch origin ${NASTOOL_BRANCH}
-    git checkout tags/$(git tag --sort=-v:refname | head -1)
+    git reset --hard $(git tag --sort=-v:refname | head -1)
 
     if [ $? -eq 0 ]; then
         echo "更新成功..."
-        # Python依赖包更新
-        execute "poetry install"
     else
-        echo "更新失败，继续使用旧的程序来启动..."
+        echo "更新失败..."
     fi
 else
     echo "程序自动升级已关闭，如需自动升级请在创建容器时设置环境变量：NASTOOL_AUTO_UPDATE=true"
@@ -31,11 +36,6 @@ fi
 
 echo "以PUID=${PUID}，PGID=${PGID}的身份启动程序..."
 
-mkdir -p /.local
-mkdir -p /.pm2
-chown -R "${PUID}":"${PGID}" "${WORKDIR}" /config /usr/lib/chromium /.local /.pm2
-export PATH=${PATH}:/usr/lib/chromium
-
 umask "${UMASK}"
-
-execute "poetry run python run.py"
+chmod +x ./start.sh
+execute "./start.sh"
