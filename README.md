@@ -12,3 +12,8 @@ Please delete within 48 hours after downloading, all consequences caused by usin
 Note:
 
 This repository only support docker, or run locally on linux.
+
+### Deploy
+
++ docker-compose: [docker-compose.yaml](docker/compose.yml)
++ local: `sh ./start.sh`
