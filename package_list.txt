@@ -3,6 +3,7 @@ gcc
 musl-dev
 libxml2-dev
 libxslt-dev
+libffi-dev
 tzdata
 zip
 curl
@@ -11,3 +12,4 @@ xvfb
 inotify-tools
 chromium-driver
 dumb-init
+python3-cryptography

@@ -1,37 +1,58 @@
-FROM python:3.10.10-slim-buster
-ENV NASTOOL_BRANCH="dev"
-RUN apt-get update -y \
-    && apt-get install wget -y \
-    && apt-get install -y $(echo $(wget --no-check-certificate -qO- https://raw.githubusercontent.com/sgpublic/nas-tools-enhanced/${NASTOOL_BRANCH}/package_list.txt)) \
-    && ln -sf /usr/share/zoneinfo/${TZ} /etc/localtime \
-    && echo "${TZ}" > /etc/timezone \
-    && ln -sf /usr/bin/python3 /usr/bin/python \
-    && curl https://rclone.org/install.sh | bash \
-    && if [ "$(uname -m)" = "x86_64" ]; then ARCH=amd64; elif [ "$(uname -m)" = "aarch64" ]; then ARCH=arm64; fi \
-    && curl https://dl.min.io/client/mc/release/linux-${ARCH}/mc --create-dirs -o /usr/bin/mc \
-    && chmod +x /usr/bin/mc \
-    && pip install --upgrade pip setuptools wheel \
-    && pip install cython \
-    && pip install poetry \
-    && rm -rf /tmp/* /root/.cache /var/cache/apk/*
+# syntax = docker/dockerfile:experimental
+
+FROM python:3.10-slim-bullseye as builder
+
+ENV NASTOOL_BRANCH="main-my"
+
+RUN apt-get update && apt-get install -y gcc curl wget && \
+    apt-get install -y $(echo $(wget --no-check-certificate -qO- https://raw.githubusercontent.com/geziang/nas-tools-enhanced/${NASTOOL_BRANCH}/package_list.txt))
+
+RUN curl https://sh.rustup.rs -sSf | sh -s -- -y && apt-get install --reinstall libc6-dev -y
+ENV PATH="/root/.cargo/bin:${PATH}"
+ENV CARGO_REGISTRIES_CRATES_IO_PROTOCOL=sparse
+
+RUN pip install --upgrade pip setuptools wheel && \
+    pip install cython poetry && \
+    pip install -r https://github.com/geziang/nas-tools-enhanced/raw/${NASTOOL_BRANCH}/requirements.txt
+
 RUN set -ex; \
     curl -o /usr/local/bin/su-exec.c https://raw.githubusercontent.com/ncopa/su-exec/master/su-exec.c; \
-    fetch_deps='gcc libc-dev'; \
-    apt-get update; \
-    apt-get install -y --no-install-recommends $fetch_deps; \
-    rm -rf /var/lib/apt/lists/*; \
     gcc -Wall /usr/local/bin/su-exec.c -o/usr/local/bin/su-exec; \
     chown root:root /usr/local/bin/su-exec; \
     chmod 0755 /usr/local/bin/su-exec; \
-    rm /usr/local/bin/su-exec.c; \
-    apt-get purge -y --auto-remove $fetch_deps
+    rm /usr/local/bin/su-exec.c
+
+
+FROM python:3.10-slim-bullseye
+
+# Copy pre-built packages from builder stage
+COPY --from=builder /usr/local/lib/python3.10/site-packages/ /usr/local/lib/python3.10/site-packages/
+COPY --from=builder /usr/local/bin/su-exec /usr/local/bin/su-exec
+
+RUN set -ex; \
+    chown root:root /usr/local/bin/su-exec; \
+    chmod 0755 /usr/local/bin/su-exec
+
+ENV NASTOOL_BRANCH="main-my"
+RUN apt-get update -y \
+    && apt-get install curl wget -y \
+    && apt-get install -y $(echo $(wget --no-check-certificate -qO- https://raw.githubusercontent.com/geziang/nas-tools-enhanced/${NASTOOL_BRANCH}/package_list.txt)) \
+    && ln -sf /usr/bin/python3 /usr/bin/python \
+    && curl https://rclone.org/install.sh | bash \
+    && ARCH=arm \
+    && curl https://dl.min.io/client/mc/release/linux-${ARCH}/mc --create-dirs -o /usr/bin/mc \
+    && chmod +x /usr/bin/mc \
+    && pip install --upgrade pip \
+    && pip install cython poetry \
+    && rm -rf /tmp/* /root/.cache /var/cache/apk/*
+    
 ENV LANG="C.UTF-8" \
     TZ="Asia/Shanghai" \
     NASTOOL_CONFIG="/config/config.yaml" \
     NASTOOL_AUTO_UPDATE="false" \
-    NASTOOL_BRANCH="main" \
+    NASTOOL_BRANCH="main-my" \
     PS1="\u@\h:\w \$ " \
-    REPO_URL="https://github.com/sgpublic/nas-tools-enhanced.git" \
+    REPO_URL="https://github.com/geziang/nas-tools-enhanced.git" \
     PUID=0 \
     PGID=0 \
     UMASK=000 \

@@ -1,5 +1,8 @@
 #!/bin/bash
 
+ln -sf /usr/share/zoneinfo/${TZ} /etc/localtime
+echo "${TZ}" > /etc/timezone
+
 poetry_path="/.poetry"
 mkdir -p "${poetry_path}"
 python_ver=$(python3 -V | awk '{print $2}')
