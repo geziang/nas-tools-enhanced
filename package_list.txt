@@ -13,4 +13,4 @@ inotify-tools
 chromium-driver
 dumb-init
 libssl-dev
-python3-cryptography
+pkg-config
