@@ -13,4 +13,6 @@ inotify-tools
 chromium-driver
 dumb-init
 libssl-dev
+zlib1g-dev
+libjpeg-dev
 pkg-config
