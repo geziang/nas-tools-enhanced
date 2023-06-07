@@ -4,7 +4,7 @@ FROM python:3.10-slim-bullseye as builder
 
 ENV NASTOOL_BRANCH="main-my"
 
-RUN apt-get update && apt-get install -y gcc curl wget && \
+RUN apt-get update && apt-get install -y gcc g++ curl wget && \
     apt-get install -y $(echo $(wget --no-check-certificate -qO- https://raw.githubusercontent.com/geziang/nas-tools-enhanced/${NASTOOL_BRANCH}/package_list.txt))
 
 RUN curl https://sh.rustup.rs -sSf | sh -s -- -y && apt-get install --reinstall libc6-dev -y
