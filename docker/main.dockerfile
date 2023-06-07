@@ -15,6 +15,23 @@ RUN pip install --upgrade pip setuptools wheel && \
     pip install cython poetry && \
     pip install -r https://github.com/geziang/nas-tools-enhanced/raw/${NASTOOL_BRANCH}/requirements.txt
 
+ENV LANG="C.UTF-8" \
+    TZ="Asia/Shanghai" \
+    NASTOOL_BRANCH="main-my" \
+    REPO_URL="https://github.com/geziang/nas-tools-enhanced.git" \
+    WORKDIR="/nas-tools-enhanced"
+WORKDIR ${WORKDIR}
+RUN poetry_path="/.poetry" && \
+    mkdir -p "${poetry_path}" && \
+    export POETRY_VIRTUALENVS_PATH="${poetry_path}/venv" && \
+    export POETRY_CACHE_DIR="${poetry_path}/cache" && \
+    export POETRY_VIRTUALENVS_CREATE=true && \
+    export POETRY_VIRTUALENVS_IN_PROJECT=false && \
+    git config --global pull.ff only && \
+    git clone -b ${NASTOOL_BRANCH} ${REPO_URL} ${WORKDIR} --depth=1 --recurse-submodule && \
+    git config --global --add safe.directory ${WORKDIR} && \
+    python3 -m poetry install
+    
 RUN set -ex; \
     curl -o /usr/local/bin/su-exec.c https://raw.githubusercontent.com/ncopa/su-exec/master/su-exec.c; \
     gcc -Wall /usr/local/bin/su-exec.c -o/usr/local/bin/su-exec; \
@@ -63,8 +80,6 @@ RUN echo 'fs.inotify.max_user_watches=524288' >> /etc/sysctl.conf \
     && git config --global pull.ff only \
     && git clone -b ${NASTOOL_BRANCH} ${REPO_URL} ${WORKDIR} --depth=1 --recurse-submodule \
     && git config --global --add safe.directory ${WORKDIR}
-
-RUN sed -i 's/^poetry/python -m poetry/g' start.sh
 EXPOSE 3000
 VOLUME ["/config"]
 ENTRYPOINT ["/nas-tools-enhanced/docker/entrypoint.sh"]
