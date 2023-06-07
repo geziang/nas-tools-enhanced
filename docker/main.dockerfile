@@ -63,6 +63,8 @@ RUN echo 'fs.inotify.max_user_watches=524288' >> /etc/sysctl.conf \
     && git config --global pull.ff only \
     && git clone -b ${NASTOOL_BRANCH} ${REPO_URL} ${WORKDIR} --depth=1 --recurse-submodule \
     && git config --global --add safe.directory ${WORKDIR}
+
+RUN sed -i 's/^poetry/python -m poetry/g' start.sh
 EXPOSE 3000
 VOLUME ["/config"]
 ENTRYPOINT ["/nas-tools-enhanced/docker/entrypoint.sh"]
