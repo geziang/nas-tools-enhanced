@@ -12,8 +12,7 @@ ENV PATH="/root/.cargo/bin:${PATH}"
 ENV CARGO_REGISTRIES_CRATES_IO_PROTOCOL=sparse
 
 RUN pip install --upgrade pip setuptools wheel && \
-    pip install cython poetry && \
-    pip install -r https://github.com/geziang/nas-tools-enhanced/raw/${NASTOOL_BRANCH}/requirements.txt
+    pip install cython poetry
 
 ENV LANG="C.UTF-8" \
     TZ="Asia/Shanghai" \
