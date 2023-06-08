@@ -45,12 +45,6 @@ zhconv = "^1.4.3"
 werkzeug = "2.1.2"
 
 
-[[tool.poetry.source]]
-name = "mirrors"
-url = "https://mirrors.aliyun.com/pypi/simple/"
-default = true
-secondary = false
-
 
 [build-system]
 requires = ["poetry-core"]
