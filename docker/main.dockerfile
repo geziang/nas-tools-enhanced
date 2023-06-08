@@ -44,6 +44,7 @@ FROM python:3.10-slim-bullseye
 # Copy pre-built packages from builder stage
 COPY --from=builder /usr/local/lib/python3.10/site-packages/ /usr/local/lib/python3.10/site-packages/
 COPY --from=builder /usr/local/bin/su-exec /usr/local/bin/su-exec
+COPY --from=builder /.poetry/ /.poetry/
 
 RUN set -ex; \
     chown root:root /usr/local/bin/su-exec; \
