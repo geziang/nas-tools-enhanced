@@ -12,24 +12,8 @@ ENV PATH="/root/.cargo/bin:${PATH}"
 ENV CARGO_REGISTRIES_CRATES_IO_PROTOCOL=sparse
 
 RUN pip install --upgrade pip setuptools wheel && \
-    pip install cython poetry
-
-ENV LANG="C.UTF-8" \
-    TZ="Asia/Shanghai" \
-    NASTOOL_BRANCH="main-my" \
-    REPO_URL="https://github.com/geziang/nas-tools-enhanced.git" \
-    WORKDIR="/nas-tools-enhanced"
-WORKDIR ${WORKDIR}
-RUN poetry_path="/.poetry" && \
-    mkdir -p "${poetry_path}" && \
-    export POETRY_VIRTUALENVS_PATH="${poetry_path}/venv" && \
-    export POETRY_CACHE_DIR="${poetry_path}/cache" && \
-    export POETRY_VIRTUALENVS_CREATE=true && \
-    export POETRY_VIRTUALENVS_IN_PROJECT=false && \
-    git config --global pull.ff only && \
-    git clone -b ${NASTOOL_BRANCH} ${REPO_URL} ${WORKDIR} --depth=1 --recurse-submodule && \
-    git config --global --add safe.directory ${WORKDIR} && \
-    python3 -m poetry install
+    pip install cython poetry && \
+    pip install -r https://github.com/geziang/nas-tools-enhanced/raw/${NASTOOL_BRANCH}/requirements.txt
     
 RUN set -ex; \
     curl -o /usr/local/bin/su-exec.c https://raw.githubusercontent.com/ncopa/su-exec/master/su-exec.c; \
@@ -44,7 +28,6 @@ FROM python:3.10-slim-bullseye
 # Copy pre-built packages from builder stage
 COPY --from=builder /usr/local/lib/python3.10/site-packages/ /usr/local/lib/python3.10/site-packages/
 COPY --from=builder /usr/local/bin/su-exec /usr/local/bin/su-exec
-COPY --from=builder /.poetry/ /.poetry/
 
 RUN set -ex; \
     chown root:root /usr/local/bin/su-exec; \
