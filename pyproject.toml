@@ -44,7 +44,10 @@ ruamel-yaml-clib = "^0.2.7"
 zhconv = "^1.4.3"
 werkzeug = "2.1.2"
 
-
+[[tool.poetry.source]]
+name = "pypi-public"
+url = "https://pypi.org/simple/"
+default = true
 
 [build-system]
 requires = ["poetry-core"]
